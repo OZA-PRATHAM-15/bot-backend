@@ -3,9 +3,13 @@ from utils.db import get_database
 from intents.analytics import handle_analytics_query 
 from flask_cors import CORS
 from waitress import serve
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+frontend_origin = os.getenv("FRONTEND_ORIGIN", "*")
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[frontend_origin])
 
 @app.route('/bot-api/webhook', methods=['POST'])
 def bot_webhook():
