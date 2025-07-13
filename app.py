@@ -23,6 +23,8 @@ def add_cors_headers(response):
 
 @app.route('/bot-api/webhook', methods=['POST', 'OPTIONS'])
 def bot_webhook():
+    if request.method == 'OPTIONS':
+        return '', 200
     try:
         payload = request.get_json()
         print("Request received from frontend:", payload)
