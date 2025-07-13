@@ -9,9 +9,19 @@ from dotenv import load_dotenv
 load_dotenv()
 frontend_origin = os.getenv("FRONTEND_ORIGIN", "*")
 app = Flask(__name__)
-CORS(app, origins=[frontend_origin])
 
-@app.route('/bot-api/webhook', methods=['POST'])
+CORS(app, origins=[frontend_origin] if frontend_origin != "*" else "*", supports_credentials=True)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = frontend_origin if frontend_origin != "*" else "*"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    return response
+
+
+@app.route('/bot-api/webhook', methods=['POST', 'OPTIONS'])
 def bot_webhook():
     try:
         payload = request.get_json()
